@@ -16,7 +16,7 @@
 namespace qh4module\city;
 
 
-use qh4module\city\models\CityActiveRecord;
+use qh4module\city\external\ExtCity;
 use qttx\helper\ArrayHelper;
 
 class HpCity
@@ -26,10 +26,13 @@ class HpCity
      * @param array $level 等级筛选
      * @param array $alias 用于设置别名
      *               比如有些组件需要 label 和 value ,则可以传入 ['id'=>'value','name'=>'label']
+     * @param ExtCity $external
      * @return array
      */
-    public static function optionData($level = [1, 2, 3, 4], $alias = [])
+    public static function optionData($level = [1, 2, 3, 4], $alias = [], ExtCity $external = null)
     {
+        if (is_null($external)) $external = new ExtCity();
+
         $pid_name = 'parent_id';
         $id_name = 'id';
         $field_id = 'id';
@@ -44,7 +47,7 @@ class HpCity
 
         $result = \QTTX::$app->db
             ->select([$field_id, 'parent_id', $field_name])
-            ->from(CityActiveRecord::tableName())
+            ->from($external->tableName())
             ->whereIn('level', $level)
             ->query();
 
